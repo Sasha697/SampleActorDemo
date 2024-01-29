@@ -31,7 +31,8 @@ protected:
 	// Input bindings
 	void MoveForward(float scale);
 	void MoveRight(float scale);
-
+	void Turn(float scale);
+	void LookUp(float scale);
 
 public:	
 	// Called every frame

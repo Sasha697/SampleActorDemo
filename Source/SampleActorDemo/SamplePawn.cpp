@@ -20,6 +20,9 @@ ASamplePawn::ASamplePawn()
 	Camera = CreateDefaultSubobject<UCameraComponent>("Camera");
 	Camera->SetupAttachment(StaticMesh);
 	Camera->SetRelativeLocation(FVector(-500.0f, 0, 0));
+
+	bUseControllerRotationYaw = true;
+	bUseControllerRotationPitch = true;
 }
 
 // Called when the game starts or when spawned
@@ -39,6 +42,16 @@ void ASamplePawn::MoveRight(float scale)
 	Movement->AddInputVector(GetActorRightVector() * scale);
 }
 
+void ASamplePawn::Turn(float scale)
+{
+	AddControllerYawInput(scale);
+}
+
+void ASamplePawn::LookUp(float scale)
+{
+	AddControllerPitchInput(scale);
+}
+
 // Called every frame
 void ASamplePawn::Tick(float DeltaTime)
 {
@@ -53,5 +66,7 @@ void ASamplePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ASamplePawn::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ASamplePawn::MoveRight);
+	PlayerInputComponent->BindAxis("Turn", this, &ASamplePawn::Turn);
+	PlayerInputComponent->BindAxis("LookUp", this, &ASamplePawn::LookUp);
 }
 
