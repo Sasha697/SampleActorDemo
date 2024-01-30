@@ -5,6 +5,8 @@
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "Camera/CameraComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Bullet.h"
 
 // Sets default values
 ASamplePawn::ASamplePawn()
@@ -17,9 +19,13 @@ ASamplePawn::ASamplePawn()
 
 	Movement = CreateDefaultSubobject<UFloatingPawnMovement>("Movement");
 
+	SpringArm = CreateDefaultSubobject<USpringArmComponent>("SpringArm");
+	SpringArm->SetupAttachment(StaticMesh);
+	SpringArm->TargetArmLength = 500.0f;
+
 	Camera = CreateDefaultSubobject<UCameraComponent>("Camera");
 	Camera->SetupAttachment(StaticMesh);
-	Camera->SetRelativeLocation(FVector(-500.0f, 0, 0));
+	Camera->SetupAttachment(SpringArm);
 
 	bUseControllerRotationYaw = true;
 	bUseControllerRotationPitch = true;
@@ -52,6 +58,27 @@ void ASamplePawn::LookUp(float scale)
 	AddControllerPitchInput(scale);
 }
 
+void ASamplePawn::Shoot()
+{
+	if (!BulletClass) return;
+
+	// Spawn the bullet
+	FActorSpawnParameters spawnPrams;
+	spawnPrams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	spawnPrams.bNoFail = true;
+	// Specify that it (the bullet) was spawn from this actor
+	spawnPrams.Owner = this;
+	// Specify who is source of the damage
+	spawnPrams.Instigator = this;
+
+	FTransform transform;
+	transform.SetLocation(GetActorForwardVector() * BulletSpawnOffset + GetActorLocation());
+	transform.SetRotation(GetActorQuat());
+	transform.SetScale3D(FVector(1.0f));
+
+	GetWorld()->SpawnActor<ABullet>(BulletClass, transform, spawnPrams);
+}
+
 // Called every frame
 void ASamplePawn::Tick(float DeltaTime)
 {
@@ -68,5 +95,7 @@ void ASamplePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("MoveRight", this, &ASamplePawn::MoveRight);
 	PlayerInputComponent->BindAxis("Turn", this, &ASamplePawn::Turn);
 	PlayerInputComponent->BindAxis("LookUp", this, &ASamplePawn::LookUp);
+
+	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &ASamplePawn::Shoot);
 }
 
