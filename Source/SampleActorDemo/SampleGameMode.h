@@ -16,9 +16,12 @@ class SAMPLEACTORDEMO_API ASampleGameMode : public AGameModeBase
 	
 public:
 	ASampleGameMode();
-
-	UFUNCTION(BlueprintCallable)
+	
+	// Handles increasing of points and determining win condition
 	void IncreasePoints();
+
+	// Handles decreasing of points
+	void DecreasePoints();
 
 	UPROPERTY(EditAnywhere, Category = "Game Rules")
 	int32 PointsToWin;
@@ -27,9 +30,17 @@ public:
 	int32 CurrentPoints;
 
 protected:
-	// BlueprintImplementableEvent shouldn't have any implementation
+	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	void OnTargetCollided(class ATarget* target);
+
+	// BlueprintImplementableEvent don't need any implementation
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnPointsIncreased();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnPointsDecreased();
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnWin();

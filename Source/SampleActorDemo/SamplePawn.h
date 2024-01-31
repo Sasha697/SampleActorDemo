@@ -6,6 +6,8 @@
 #include "GameFramework/Pawn.h"
 #include "SamplePawn.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTargetCollidedSignature, class ATarget*, Target);
+
 UCLASS()
 class SAMPLEACTORDEMO_API ASamplePawn : public APawn
 {
@@ -14,6 +16,9 @@ class SAMPLEACTORDEMO_API ASamplePawn : public APawn
 public:
 	// Sets default values for this pawn's properties
 	ASamplePawn();
+
+	UPROPERTY(BlueprintAssignable)
+	FTargetCollidedSignature OnTargetCollided;
 
 protected:
 	// Called when the game starts or when spawned
@@ -37,6 +42,9 @@ protected:
 	// Distance between SamplePawn and the bullet that is spawning
 	UPROPERTY(EditAnywhere)
 	float BulletSpawnOffset;
+
+	UFUNCTION()
+	void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
 
 	// Input bindings
 	void MoveForward(float scale);

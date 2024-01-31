@@ -7,6 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Bullet.h"
+#include "Target.h"
 
 // Sets default values
 ASamplePawn::ASamplePawn()
@@ -35,7 +36,18 @@ ASamplePawn::ASamplePawn()
 void ASamplePawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	OnActorHit.AddDynamic(this, &ASamplePawn::OnHit);
+}
+
+void ASamplePawn::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
+{
+	// Check if we collided with a Target
+	if (ATarget* target = Cast<ATarget>(OtherActor))
+	{
+		OnTargetCollided.Broadcast(target);
+		target->Destroy();
+	}
 }
 
 void ASamplePawn::MoveForward(float scale)
