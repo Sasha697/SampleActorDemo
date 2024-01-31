@@ -22,10 +22,13 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	class UStaticMeshComponent* StaticMesh;
 
+	UPROPERTY(EditAnywhere)
+	float MovementRange;
+
 	UFUNCTION()
 	void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
 
-	//float Movement
+	FVector moveDirection;
 
 public:	
 	// Called every frame
